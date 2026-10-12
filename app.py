@@ -162,7 +162,23 @@ elif page == MODULES[0]:
     st.divider()
     st.markdown("#### Step 2 · Test an unexpected event")
     st.write("What happens if an urgent bill arrives? The simulator uses emergency savings first.")
-    emergency = st.selectbox("Unexpected event", [0, 300, 600], format_func=lambda n: {0:"No emergency",300:"Laptop repair — $300",600:"Major unexpected expense — $600"}[n])
+    event_options = {
+        0: "No emergency — $0",
+        300: "Laptop repair — $300",
+        600: "Major unexpected expense — $600",
+        120: "Bicycle tire and brake repair — $120",
+        180: "Urgent dental visit — $180",
+        250: "Phone replacement — $250",
+        450: "Emergency trip to visit family — $450",
+        800: "Unexpected housing expense — $800",
+    }
+    emergency = st.selectbox(
+        "Unexpected event",
+        list(event_options),
+        format_func=lambda value: event_options[value],
+        help="Choose one fictional event to test. The amounts are illustrative and are not actual cost estimates."
+    )
+    st.caption("Try a different event to see whether your emergency savings still cover the bill.")
     st.markdown("#### Step 3 · Explore market uncertainty")
     st.write("Move the slider to see how an investment gain or loss changes your available funds.")
     term("Market return")
@@ -296,7 +312,35 @@ else:
     for name,(stable_return,volatile_return) in scenarios.items():
         blended = stable_share/100*stable_return + risk_share/100*volatile_return
         outcomes[name] = round(amount*(1+blended),2)
-    st.bar_chart(outcomes, horizontal=True)
+    st.markdown("**Portfolio ending value by scenario (USD)**")
+    # Text labels are rendered directly on bars; a table below provides exact values.
+    try:
+        import plotly.graph_objects as go
+        names = list(outcomes)
+        values = [outcomes[name] for name in names]
+        fig = go.Figure(go.Bar(
+            x=values,
+            y=names,
+            orientation="h",
+            text=[f"${v:,.2f}" for v in values],
+            textposition="auto",
+            marker_color=["#DC6C6C", "#7397C7", "#36A795"],
+            hovertemplate="%{y}: $%{x:,.2f}<extra></extra>",
+        ))
+        fig.update_layout(
+            xaxis_title="Ending portfolio value ($)",
+            yaxis_title=None,
+            yaxis=dict(autorange="reversed"),
+            height=320,
+            margin=dict(l=10,r=35,t=10,b=40),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            showlegend=False,
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    except ImportError:
+        st.bar_chart(outcomes, horizontal=True)
+        st.caption("Exact values are listed in the table below.")
     st.dataframe([{"Scenario":k,"End value ($)":v,"Gain/loss ($)":round(v-amount,2)} for k,v in outcomes.items()], hide_index=True, use_container_width=True)
     st.caption("One-period deterministic teaching scenarios. Returns are invented for illustration; no probabilities, diversification correlations, fees, inflation, or taxes are modeled.")
     downside = amount-outcomes["Downturn"]
@@ -320,4 +364,13 @@ else:
             st.success(f"Lab complete! Learning score: {score}/100. {'Correct: volatility increases sensitivity.' if correct else 'Review: volatility increases sensitivity; it does not guarantee returns.'}")
 
 st.divider()
+with st.container(border=True):
+    st.markdown("### 🎓 Want a Certificate of Completion?")
+    st.write(
+        "Complete all three learning labs, then email the AltRisk Academy team "
+        "to request a Certificate of Completion. Please include your preferred "
+        "name for the certificate and a copy of your downloaded learning report. "
+        "Certificates are issued after manual review and are not academic credentials."
+    )
+    st.info("Contact email: **[ADD CONTACT EMAIL]** — replace this placeholder with the official AltRisk Academy email before sharing the app.")
 st.caption("AltRisk Academy · Independent educational prototype · Not investment, tax, or financial advice. No real transactions.")
