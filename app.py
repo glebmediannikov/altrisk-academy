@@ -1,9 +1,11 @@
 """AltRisk Academy: standalone financial decision-making educational MVP."""
 import io
 import csv
+from pathlib import Path
 import streamlit as st
 
-st.set_page_config(page_title="AltRisk Academy", page_icon="🎓", layout="wide")
+LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
+st.set_page_config(page_title="AltRisk Academy", page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🎓", layout="wide")
 
 st.markdown("""<style>
 .stApp {background: #f6f8fc; color: #15253c;}
@@ -87,13 +89,17 @@ def guide(steps, takeaway):
         st.info(f"**What you'll learn:** {takeaway}")
 
 with st.sidebar:
-    st.markdown("## 🎓 AltRisk Academy")
+    if LOGO_PATH.exists():
+        st.image(str(LOGO_PATH), width=155)
+    st.markdown("## AltRisk Academy")
     page = st.radio("Explore", ["Dashboard"] + MODULES, label_visibility="collapsed")
     st.divider()
     st.caption("Virtual money • Educational simulations • No account required")
     st.caption("Scores are learning prompts, not financial or psychological assessments.")
 
 if page == "Dashboard":
+    if LOGO_PATH.exists():
+        st.image(str(LOGO_PATH), width=170)
     st.markdown('<div class="hero"><h1>Financial Decision-Making Lab</h1><p>Learn. Experiment. Decide with Confidence.</p></div>', unsafe_allow_html=True)
     st.write("Explore real-life trade-offs using virtual money. Try each lab, review your decisions, and learn why uncertainty matters.")
     guide([
