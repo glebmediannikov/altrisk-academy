@@ -96,11 +96,39 @@ def guide(steps, takeaway):
             st.write(f"**{i}.** {step}")
         st.info(f"**What you'll learn:** {takeaway}")
 
+# Support direct links from the AltRisk Academy website, for example:
+# https://altrisk-academy.streamlit.app/?lab=green-investing
+LAB_SLUGS = {
+    "green-investing": "Green Investing Lab",
+    "responsible-consumption": "Responsible Consumption Lab",
+}
+PAGE_TO_SLUG = {name: slug for slug, name in LAB_SLUGS.items()}
+NAV_PAGES = ["Dashboard"] + MODULES
+
+
+def sync_page_query():
+    """Keep the URL aligned with a manual sidebar selection."""
+    selected = st.session_state.academy_page
+    slug = PAGE_TO_SLUG.get(selected)
+    if slug:
+        st.query_params["lab"] = slug
+    elif "lab" in st.query_params:
+        del st.query_params["lab"]
+
+
+# Initialize page selection once. Query parameters take priority for new sessions.
+if "academy_page" not in st.session_state:
+    requested_page = LAB_SLUGS.get(st.query_params.get("lab", ""), "Dashboard")
+    st.session_state.academy_page = requested_page
+
 with st.sidebar:
     if LOGO_PATH.exists():
         st.image(str(LOGO_PATH), width=155)
     st.markdown("## AltRisk Academy")
-    page = st.radio("Explore", ["Dashboard"] + MODULES, label_visibility="collapsed")
+    page = st.radio(
+        "Explore", NAV_PAGES, key="academy_page",
+        on_change=sync_page_query, label_visibility="collapsed",
+    )
     st.divider()
     st.caption("Virtual money • Educational simulations • No account required")
     st.caption("Scores are learning prompts, not financial or psychological assessments.")
