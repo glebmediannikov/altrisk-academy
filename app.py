@@ -4,6 +4,8 @@ import csv
 from pathlib import Path
 import streamlit as st
 
+from climate_labs import green_investing, responsible_consumption
+
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 st.set_page_config(page_title="AltRisk Academy", page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🎓", layout="wide")
 
@@ -19,7 +21,13 @@ div.stButton > button[kind="primary"] {background:#2457d6; border-radius:10px;}
 .small {color:#53647b;font-size:0.9rem;}
 </style>""", unsafe_allow_html=True)
 
-MODULES = ["Your First $1,000", "Life Happens", "Investment Risk Lab"]
+MODULES = [
+    "Your First $1,000",
+    "Life Happens",
+    "Investment Risk Lab",
+    "Green Investing Lab",
+    "Responsible Consumption Lab",
+]
 if "scores" not in st.session_state:
     st.session_state.scores = {}
 if "round" not in st.session_state:
@@ -43,7 +51,7 @@ def achievements():
         badges.append("🧭 Resilience Explorer — navigated life's surprises")
     if "Investment Risk Lab" in scores:
         badges.append("📊 Risk Detective — compared uncertainty")
-    if len(scores) == 3:
+  if len(scores) == len(MODULES):
         badges.append("🏆 Financial Explorer — completed all labs")
     return badges
 
@@ -111,10 +119,10 @@ if page == "Dashboard":
     completed = len(st.session_state.scores)
     average = round(sum(v["score"] for v in st.session_state.scores.values()) / completed) if completed else 0
     a, b, c = st.columns(3)
-    a.metric("Labs completed", f"{completed}/3")
+   a.metric("Labs completed", f"{completed}/{len(MODULES)}")
     b.metric("Average learning score", f"{average}/100" if completed else "—")
     c.metric("Achievements", len(achievements()))
-    st.progress(completed / 3)
+    st.progress(completed / len(MODULES))
     st.markdown("**Key terms**")
     c1,c2 = st.columns(2)
     with c1:
@@ -126,6 +134,8 @@ if page == "Dashboard":
         (MODULES[0], "Balance spending, emergency savings, and investing."),
         (MODULES[1], "Navigate three unexpected financial choices."),
         (MODULES[2], "Compare different portfolio mixes and market outcomes."),
+        (MODULES[3], "Build a green investment portfolio."),
+(MODULES[4], "Explore sustainable everyday decisions."),
     ]:
         with st.container(border=True):
             st.markdown(f"**{name}** {'✅' if name in st.session_state.scores else '○'}")
@@ -290,7 +300,7 @@ elif page == MODULES[1]:
         st.rerun()
 
 else:
-    st.title("📈 Investment Risk Lab")
+    elif page == MODULES[2]:
     st.write("Compare simplified hypothetical portfolios. These are fictional assets, not recommendations or forecasts.")
     guide([
         "Enter the virtual amount you want to invest.",
@@ -368,12 +378,16 @@ else:
             lesson = "A portfolio's risk depends on allocation and goals; these simple outcomes are scenarios, not predictions."
             save_score(MODULES[2],score,lesson)
             st.success(f"Lab complete! Learning score: {score}/100. {'Correct: volatility increases sensitivity.' if correct else 'Review: volatility increases sensitivity; it does not guarantee returns.'}")
+elif page == "Green Investing Lab":
+    green_investing(save_score)
 
+elif page == "Responsible Consumption Lab":
+    responsible_consumption(save_score)
 st.divider()
 with st.container(border=True):
     st.markdown("### 🎓 Want a Certificate of Completion?")
     st.write(
-        "Complete all three learning labs, then email the AltRisk Academy team "
+        "Complete all five learning labs, then email the AltRisk Academy team "
         "to request a Certificate of Completion. Please include your preferred "
         "name for the certificate and a copy of your downloaded learning report. "
         "Certificates are issued after manual review and are not academic credentials."
