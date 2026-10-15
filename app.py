@@ -51,7 +51,7 @@ def achievements():
         badges.append("🧭 Resilience Explorer — navigated life's surprises")
     if "Investment Risk Lab" in scores:
         badges.append("📊 Risk Detective — compared uncertainty")
-  if len(scores) == len(MODULES):
+    if len(scores) == len(MODULES):
         badges.append("🏆 Financial Explorer — completed all labs")
     return badges
 
@@ -119,7 +119,7 @@ if page == "Dashboard":
     completed = len(st.session_state.scores)
     average = round(sum(v["score"] for v in st.session_state.scores.values()) / completed) if completed else 0
     a, b, c = st.columns(3)
-   a.metric("Labs completed", f"{completed}/{len(MODULES)}")
+    a.metric("Labs completed", f"{completed}/{len(MODULES)}")
     b.metric("Average learning score", f"{average}/100" if completed else "—")
     c.metric("Achievements", len(achievements()))
     st.progress(completed / len(MODULES))
@@ -135,7 +135,7 @@ if page == "Dashboard":
         (MODULES[1], "Navigate three unexpected financial choices."),
         (MODULES[2], "Compare different portfolio mixes and market outcomes."),
         (MODULES[3], "Build a green investment portfolio."),
-(MODULES[4], "Explore sustainable everyday decisions."),
+        (MODULES[4], "Explore sustainable everyday decisions."),
     ]:
         with st.container(border=True):
             st.markdown(f"**{name}** {'✅' if name in st.session_state.scores else '○'}")
@@ -299,8 +299,9 @@ elif page == MODULES[1]:
         st.session_state.life={"cash":500,"debt":0,"history":[]}
         st.rerun()
 
-else:
-    elif page == MODULES[2]:
+
+elif page == MODULES[2]:
+    st.title("📈 Investment Risk Lab")
     st.write("Compare simplified hypothetical portfolios. These are fictional assets, not recommendations or forecasts.")
     guide([
         "Enter the virtual amount you want to invest.",
