@@ -99,11 +99,22 @@ def guide(steps, takeaway):
 # Support direct links from the AltRisk Academy website, for example:
 # https://altrisk-academy.streamlit.app/?lab=green-investing
 LAB_SLUGS = {
+    "first-1000": "Your First $1,000",
+    "life-happens": "Life Happens",
+    "investment-risk": "Investment Risk Lab",
     "green-investing": "Green Investing Lab",
     "responsible-consumption": "Responsible Consumption Lab",
 }
 PAGE_TO_SLUG = {name: slug for slug, name in LAB_SLUGS.items()}
 NAV_PAGES = ["Dashboard"] + MODULES
+
+
+def page_from_query(params):
+    """Map the ?lab= value to a sidebar page; invalid or missing values give Dashboard."""
+    slug = params.get("lab", "")
+    if not isinstance(slug, str):
+        return "Dashboard"
+    return LAB_SLUGS.get(slug.strip().lower(), "Dashboard")
 
 
 def sync_page_query():
@@ -118,8 +129,10 @@ def sync_page_query():
 
 # Initialize page selection once. Query parameters take priority for new sessions.
 if "academy_page" not in st.session_state:
-    requested_page = LAB_SLUGS.get(st.query_params.get("lab", ""), "Dashboard")
-    st.session_state.academy_page = requested_page
+    st.session_state.academy_page = page_from_query(st.query_params)
+    # Drop invalid slugs so the URL matches the displayed page.
+    if "lab" in st.query_params and PAGE_TO_SLUG.get(st.session_state.academy_page) is None:
+        del st.query_params["lab"]
 
 with st.sidebar:
     if LOGO_PATH.exists():
