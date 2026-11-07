@@ -446,5 +446,5 @@ with st.container(border=True):
         "name for the certificate and a copy of your downloaded learning report. "
         "Certificates are issued after manual review and are not academic credentials."
     )
-    st.info("Contact email: **[mariamediannikova@gmail.com](mailto:mariamediannikova@gmail.com)**")
+    st.info("Contact email: [mariamediannikova@gmail.com](mailto:mariamediannikova@gmail.com)")
 st.caption("AltRisk Academy · Independent educational prototype · Not investment, tax, or financial advice. No real transactions.")
