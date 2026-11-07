@@ -1,16 +1,19 @@
 
 """Learning Assessment interface for AltRisk Academy."""
+from collections.abc import Callable
+
 import plotly.graph_objects as go
 import streamlit as st
 
-from learning_assessment import learning_gain, score_assessment
+from adaptive_feedback import recommendations_for_scores
+from learning_assessment import AssessmentResult, learning_gain, score_assessment
 from question_bank import QUESTIONS
 
 
 PRACTICE_GUIDANCE = {
     "diversification": (
         "Spread investments across different assets to reduce reliance on one "
-        "investment; diversification cannot eliminate all losses. Try the Investment Risk Lab."
+        "investment; diversification cannot eliminate all losses. Try the Green Investing Lab."
     ),
     "liquidity": (
         "Liquidity is how readily money can be used when needed. Explore emergency "
@@ -34,7 +37,42 @@ def restart_assessment():
             st.session_state.pop(f"assessment_{question['id']}", None)
 
 
-def render_assessment():
+def render_learning_path(
+    result: AssessmentResult, form: str, navigate_to_lab: Callable[[str], None]
+):
+    st.subheader("Your Personalized Learning Path")
+    st.caption(
+        f"Based on your {form}-test. Topics with incorrect answers appear first, "
+        "ordered by lowest percentage correct. This rule-based feedback is not validated."
+    )
+    recommendations = recommendations_for_scores(result.by_topic)
+    if not recommendations:
+        st.success(
+            "You answered all questions correctly on this test. "
+            "You can still explore the labs to practice."
+        )
+    for recommendation in recommendations:
+        label = "Financial risk" if recommendation.topic == "risk" else recommendation.topic.title()
+        with st.container(border=True):
+            st.markdown(f"#### {label}")
+            percentage = 100 * recommendation.correct / recommendation.total
+            st.write(
+                f"**Performance:** {recommendation.correct}/{recommendation.total} "
+                f"correct ({percentage:.0f}%)"
+            )
+            st.write(f"**Why this topic matters:** {recommendation.explanation}")
+            st.write(f"**Practical example:** {recommendation.example}")
+            st.write(f"**Why recommended:** {recommendation.reason}")
+            st.write(f"**Recommended lab:** {recommendation.lab}")
+            st.button(
+                f"Open {recommendation.lab} for {label}",
+                key=f"assessment_path_{recommendation.topic}",
+                on_click=navigate_to_lab,
+                args=(recommendation.lab,),
+            )
+
+
+def render_assessment(navigate_to_lab: Callable[[str], None]):
     st.title("Learning Assessment")
     st.write(
         "Check what you know before exploring the learning labs, "
@@ -43,6 +81,11 @@ def render_assessment():
     st.info(
         "This is a prototype learning check, not a validated exam. "
         "Results are stored only in your current app session."
+    )
+    st.write(
+        "1. Take the pre-test.  2. Review your learning path.  "
+        "3. Explore recommended labs.  4. Return to Learning Assessment.  "
+        "5. Complete the post-test.  6. Review your remaining practice topics."
     )
 
     if "assessment_results" not in st.session_state:
@@ -57,9 +100,9 @@ def render_assessment():
         if form == "post":
             st.subheader("Step 2 — Learning experience")
             st.write(
-                "Choose the educational labs from the Explore sidebar and complete "
-                "them before returning to Learning Assessment for the post-test. "
-                "Your completed assessment results stay in this session as you navigate."
+                "Explore your recommended labs, then return to Learning Assessment "
+                "using the sidebar. You do not need to complete every lab before "
+                "the post-test. Your results stay in this session as you navigate."
             )
         st.subheader(heading)
 
@@ -73,6 +116,8 @@ def render_assessment():
                 f"Completed: {result.correct}/{result.total} "
                 f"({result.percentage:.1f}%)"
             )
+            if form == "post" or "post" not in results:
+                render_learning_path(result, form, navigate_to_lab)
             continue
 
         with st.form(f"assessment_{form}"):

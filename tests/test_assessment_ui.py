@@ -136,3 +136,56 @@ def test_restart_during_unfinished_post_test():
     assert app.session_state["assessment_results"] == {}
     answer_form(app, "pre")
     assert app.radio(key=f"assessment_{first['id']}").value is None
+
+
+def test_personalized_path_updates_after_post_test():
+    app = assessment_app()
+    answer_form(app, "pre", 4)
+    assert any("Your Personalized Learning Path" in item.value for item in app.subheader)
+    assert any("Based on your pre-test" in item.value for item in app.caption)
+    assert app.button(key="assessment_path_diversification")
+    assert app.button(key="assessment_path_budgeting")
+    assert any("Hypothetical example" in item.value for item in app.markdown)
+    answer_form(app, "post", 5)
+    assert any("Based on your post-test" in item.value for item in app.caption)
+    assert [button.key for button in app.button if button.key and button.key.startswith("assessment_path_")] == [
+        "assessment_path_budgeting"
+    ]
+    assert app.metric[0].value == "4/6 (66.67%)"
+    assert app.metric[1].value == "5/6 (83.33%)"
+
+
+@pytest.mark.parametrize("topic,lab,slug", [
+    ("diversification", "Green Investing Lab", "green-investing"),
+    ("risk", "Investment Risk Lab", "investment-risk"),
+    ("budgeting", "Your First $1,000", "first-1000"),
+    ("liquidity", "Your First $1,000", "first-1000"),
+])
+def test_recommended_lab_navigation_and_return(topic, lab, slug):
+    app = assessment_app()
+    answer_form(app, "pre", 0)
+    pre = app.session_state["assessment_results"]["pre"]
+    app.button(key=f"assessment_path_{topic}").click().run()
+    assert not app.exception
+    assert app.sidebar.radio[0].value == lab
+    assert app.query_params["lab"] == slug
+    assert app.session_state["assessment_results"]["pre"] == pre
+    app.sidebar.radio[0].set_value("Learning Assessment").run()
+    assert not app.exception
+    assert app.query_params["lab"] == "learning-assessment"
+    assert app.button(key=f"assessment_path_{topic}")
+    assert app.session_state["assessment_results"]["pre"] == pre
+
+
+def test_perfect_pre_and_restart_clear_learning_path():
+    app = assessment_app()
+    answer_form(app, "pre", 6)
+    assert any("all questions correctly" in item.value for item in app.success)
+    assert not [button for button in app.button if button.key and button.key.startswith("assessment_path_")]
+    answer_form(app, "post", 0)
+    assert app.button(key="assessment_path_risk")
+    next(button for button in app.button if button.label == "Restart assessment").click().run()
+    assert not app.exception
+    assert app.session_state["assessment_results"] == {}
+    assert not any("Your Personalized Learning Path" in item.value for item in app.subheader)
+    assert not [button for button in app.button if button.key and button.key.startswith("assessment_path_")]

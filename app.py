@@ -129,6 +129,14 @@ def sync_page_query():
         del st.query_params["lab"]
 
 
+def navigate_to_lab(name):
+    """Select a page using the sidebar's existing state and URL mapping."""
+    if name not in MODULES:
+        raise ValueError(f"Unknown learning lab: {name}")
+    st.session_state.academy_page = name
+    sync_page_query()
+
+
 # Initialize page selection once. Query parameters take priority for new sessions.
 if "academy_page" not in st.session_state:
     st.session_state.academy_page = page_from_query(st.query_params)
@@ -428,7 +436,7 @@ elif page == "Green Investing Lab":
 elif page == "Responsible Consumption Lab":
     responsible_consumption(save_score)
 elif page == "Learning Assessment":
-    render_assessment()
+    render_assessment(navigate_to_lab)
 st.divider()
 with st.container(border=True):
     st.markdown("### 🎓 Want a Certificate of Completion?")

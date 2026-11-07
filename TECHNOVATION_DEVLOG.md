@@ -22,6 +22,16 @@
 - Limitations: the prototype questions have not been educationally validated or tested for equivalent difficulty. A score change cannot establish educational effectiveness or causation. Lab completion is encouraged but not enforced; the post-test requires a completed pre-test. Assessment results are lost when the session ends.
 - GitHub Copilot assisted with implementation, automated tests, and documentation. No student or educator validation is claimed.
 
+## November 7, 2026 — Adaptive Feedback Engine (V2.0.2)
+- Added deterministic topic recommendations with explanations, hypothetical numerical examples, and links to existing labs. Topics with wrong answers are ordered by lowest fraction correct, then alphabetically. The pre-test path is replaced by the post-test path; students need not complete all labs.
+- Chose explicit rules for transparency and reproducibility. The answer-level engine identifies wrong and unanswered questions separately, excludes unanswered items from topic percentages, and rejects invalid choices. The UI derives recommendations from existing completed topic scores, with no additional answer storage.
+- Motivation: the reported 50-student needs survey found low financial confidence in 25/50 (50%), low diversification understanding in 27/50 (54%), low confidence comparing risk in 27/50 (54%), a lack of practical examples as the main obstacle for 19/50 (38%), and strong interest in a simulator in 30/50 (60%). These descriptive findings do not establish educational effectiveness or represent all high school students.
+- Files added: `adaptive_feedback.py`, `tests/test_adaptive_feedback.py`. Files modified: `app.py`, `assessment_ui.py`, `tests/test_assessment_ui.py`, `README.md`, and `TECHNOVATION_DEVLOG.md`.
+- Tests: `.\.venv\Scripts\python.exe -m pytest tests/ -v` — 51 passed. `.\.venv\Scripts\python.exe -m compileall -q app.py assessment_ui.py adaptive_feedback.py learning_assessment.py question_bank.py` — passed. A local Streamlit agent-API smoke test submitted a pre-test and navigated to a recommended lab; AppTest covers all four final topic-to-lab routes. The existing Investment Risk Lab emitted Streamlit `use_container_width` deprecation warnings during the smoke test.
+- Privacy: no identifiers, database, analytics, external API, or persistent assessment storage added. Recommendations are derived in memory from session results.
+- Limitations: the questions and recommendations are not educationally validated; examples are hypothetical, not forecasts or financial advice. Score changes do not prove learning or causation. The sample is not evidence of population representativeness. No student testing of the new feature is claimed.
+- GitHub Copilot assisted with implementation, tests, and documentation.
+
 ## Entry template for future work
 - Date:
 - Author / contributor:
