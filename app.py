@@ -5,6 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 from climate_labs import green_investing, responsible_consumption
+from assessment_ui import render_assessment
 
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 st.set_page_config(page_title="AltRisk Academy", page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🎓", layout="wide")
@@ -104,9 +105,10 @@ LAB_SLUGS = {
     "investment-risk": "Investment Risk Lab",
     "green-investing": "Green Investing Lab",
     "responsible-consumption": "Responsible Consumption Lab",
+    "learning-assessment": "Learning Assessment",
 }
 PAGE_TO_SLUG = {name: slug for slug, name in LAB_SLUGS.items()}
-NAV_PAGES = ["Dashboard"] + MODULES
+NAV_PAGES = ["Dashboard"] + MODULES + ["Learning Assessment"]
 
 
 def page_from_query(params):
@@ -425,6 +427,8 @@ elif page == "Green Investing Lab":
 
 elif page == "Responsible Consumption Lab":
     responsible_consumption(save_score)
+elif page == "Learning Assessment":
+    render_assessment()
 st.divider()
 with st.container(border=True):
     st.markdown("### 🎓 Want a Certificate of Completion?")

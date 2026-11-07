@@ -15,10 +15,10 @@ streamlit run app.py
 ## Deploy to Streamlit Community Cloud
 
 1. Create a **new** GitHub repository named `altrisk-academy` (do not overwrite the existing AltRisk project).
-2. Upload `app.py`, `requirements.txt`, and this `README.md` to the repository root.
+2. Upload the complete application repository, including its Python modules and assets.
 3. Sign in at https://share.streamlit.io/ with GitHub.
 4. Choose **Create app**, select the repository and branch, set main file path to `app.py`, and deploy.
-5. Open the resulting URL and test all three scenarios on desktop and mobile.
+5. Open the resulting URL and test the labs and assessment on desktop and mobile.
 
 No secrets or external APIs required. Progress is stored in Streamlit session state and resets if the session ends; no personal data is collected or persisted.
 
@@ -26,6 +26,8 @@ No secrets or external APIs required. Progress is stored in Streamlit session st
 - **Your First $1,000**: budget allocation, emergency event and market scenario.
 - **Life Happens**: decisions over three rounds, with liquidity and debt trade-offs.
 - **Investment Risk Lab**: compare portfolio mixes across hypothetical market conditions.
+- **Green Investing Lab** and **Responsible Consumption Lab**: explore environmental decisions.
+- **Learning Assessment**: take a six-question pre-test and post-test, then compare scores and topic feedback. This prototype is not a validated educational instrument; score changes do not demonstrate educational effectiveness. Results remain in the current Streamlit session only.
 - **Dashboard**: lesson progress, achievements, score breakdown, and CSV learning report.
 
 ## Scoring

@@ -10,6 +10,7 @@ EXPECTED = {
     "investment-risk": "Investment Risk Lab",
     "green-investing": "Green Investing Lab",
     "responsible-consumption": "Responsible Consumption Lab",
+    "learning-assessment": "Learning Assessment",
 }
 
 
