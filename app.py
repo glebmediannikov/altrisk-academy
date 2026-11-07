@@ -434,5 +434,5 @@ with st.container(border=True):
         "name for the certificate and a copy of your downloaded learning report. "
         "Certificates are issued after manual review and are not academic credentials."
     )
-    st.info("Contact email: **[ADD CONTACT EMAIL]** — replace this placeholder with the official AltRisk Academy email before sharing the app.")
+    st.info("Contact email: [mariamediannikova@gmail.com](mailto:mariamediannikova@gmail.com)")
 st.caption("AltRisk Academy · Independent educational prototype · Not investment, tax, or financial advice. No real transactions.")
