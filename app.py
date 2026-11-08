@@ -5,6 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 from climate_labs import green_investing, responsible_consumption
+from assessment_ui import render_assessment
 
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 st.set_page_config(page_title="AltRisk Academy", page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🎓", layout="wide")
@@ -104,9 +105,10 @@ LAB_SLUGS = {
     "investment-risk": "Investment Risk Lab",
     "green-investing": "Green Investing Lab",
     "responsible-consumption": "Responsible Consumption Lab",
+    "learning-assessment": "Learning Assessment",
 }
 PAGE_TO_SLUG = {name: slug for slug, name in LAB_SLUGS.items()}
-NAV_PAGES = ["Dashboard"] + MODULES
+NAV_PAGES = ["Dashboard"] + MODULES + ["Learning Assessment"]
 
 
 def page_from_query(params):
@@ -125,6 +127,14 @@ def sync_page_query():
         st.query_params["lab"] = slug
     elif "lab" in st.query_params:
         del st.query_params["lab"]
+
+
+def navigate_to_lab(name):
+    """Select a page using the sidebar's existing state and URL mapping."""
+    if name not in MODULES:
+        raise ValueError(f"Unknown learning lab: {name}")
+    st.session_state.academy_page = name
+    sync_page_query()
 
 
 # Initialize page selection once. Query parameters take priority for new sessions.
@@ -425,6 +435,8 @@ elif page == "Green Investing Lab":
 
 elif page == "Responsible Consumption Lab":
     responsible_consumption(save_score)
+elif page == "Learning Assessment":
+    render_assessment(navigate_to_lab)
 st.divider()
 with st.container(border=True):
     st.markdown("### 🎓 Want a Certificate of Completion?")
